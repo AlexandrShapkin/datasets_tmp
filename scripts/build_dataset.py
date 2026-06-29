@@ -3,7 +3,7 @@ from __future__ import annotations
 
 import sys
 
-import build_dataset_v2 as builder
+import build_dataset_v3 as builder
 
 
 def enforce_minimum(flag: str, minimum: int) -> None:
