@@ -10,7 +10,7 @@ import numpy as np
 import torch
 from PIL import Image
 
-import build_dataset as base
+import build_dataset_core as base
 
 
 VISIBLE_POSITIVE = {
@@ -80,7 +80,7 @@ def collect_candidates(
     config = base.CLASS_CONFIG[class_name]
     by_source: dict[str, list[base.Candidate]] = defaultdict(list)
 
-    for query_index, query in enumerate(config["queries"]):
+    for query in config["queries"]:
         print(f"[collect-v2] {class_name}: Openverse query={query!r}")
         try:
             by_source["openverse"].extend(
@@ -120,8 +120,6 @@ def collect_candidates(
     inaturalist = shuffled_unique(by_source["inaturalist"], seed_base + 3)
     gbif = shuffled_unique(by_source["gbif"], seed_base + 4)
 
-    # Prefer web photographs whose search context names the edible object.
-    # Natural-history observations are a fallback only for feijoa.
     ordered = base.unique_candidates(openverse + commons + inaturalist + gbif)
     print(
         f"[collect-v2] {class_name}: openverse={len(openverse)}, "
