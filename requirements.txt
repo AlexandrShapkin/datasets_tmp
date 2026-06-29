@@ -1,0 +1,6 @@
+requests>=2.32,<3
+Pillow>=10.4,<12
+ImageHash>=4.3,<5
+numpy>=1.26,<3
+transformers>=4.46,<5
+safetensors>=0.4,<1
