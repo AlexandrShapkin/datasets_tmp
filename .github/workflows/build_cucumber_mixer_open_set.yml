@@ -7,6 +7,7 @@ on:
     paths:
       - ".github/workflows/build_cucumber_mixer_open_set.yml"
       - "scripts/build_cucumber_mixer_open_set.py"
+      - "scripts/run_open_set_builder.py"
       - "scripts/build_dataset_core.py"
       - "requirements.txt"
   pull_request:
@@ -14,6 +15,7 @@ on:
     paths:
       - ".github/workflows/build_cucumber_mixer_open_set.yml"
       - "scripts/build_cucumber_mixer_open_set.py"
+      - "scripts/run_open_set_builder.py"
       - "scripts/OPEN_SET_TRIGGER"
 
 permissions:
@@ -44,13 +46,18 @@ jobs:
         run: python -m pip install --upgrade -r requirements.txt
 
       - name: Compile-check builder
-        run: python -m py_compile scripts/build_cucumber_mixer_open_set.py
+        run: python -m py_compile scripts/build_cucumber_mixer_open_set.py scripts/run_open_set_builder.py
 
       - name: Build and validate dataset
         run: |
-          mkdir -p dist_open_set
           set -o pipefail
-          python scripts/build_cucumber_mixer_open_set.py 2>&1 | tee dist_open_set/build.log
+          python scripts/run_open_set_builder.py 2>&1 | tee /tmp/open_set_build.log
+
+      - name: Preserve complete log
+        if: always()
+        run: |
+          mkdir -p dist_open_set
+          cp /tmp/open_set_build.log dist_open_set/build.log || true
 
       - name: Publish dataset and diagnostics
         if: always()
