@@ -1,0 +1,64 @@
+name: Build cucumber mixer open-set dataset
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/build_cucumber_mixer_open_set.yml"
+      - "scripts/build_cucumber_mixer_open_set.py"
+      - "scripts/build_dataset_core.py"
+      - "requirements.txt"
+  pull_request:
+    branches: [main]
+    paths:
+      - ".github/workflows/build_cucumber_mixer_open_set.yml"
+      - "scripts/build_cucumber_mixer_open_set.py"
+      - "scripts/OPEN_SET_TRIGGER"
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 300
+    env:
+      HF_HUB_DISABLE_TELEMETRY: "1"
+      TOKENIZERS_PARALLELISM: "false"
+      PYTHONUNBUFFERED: "1"
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: Install CPU PyTorch
+        run: python -m pip install --upgrade torch torchvision --index-url https://download.pytorch.org/whl/cpu
+
+      - name: Install dependencies
+        run: python -m pip install --upgrade -r requirements.txt
+
+      - name: Compile-check builder
+        run: python -m py_compile scripts/build_cucumber_mixer_open_set.py
+
+      - name: Build and validate dataset
+        run: python scripts/build_cucumber_mixer_open_set.py
+
+      - name: Publish dataset and private evaluation files
+        uses: actions/upload-artifact@v4
+        with:
+          name: cucumber-concrete-mixer-open-set
+          path: |
+            dist_open_set/cucumber_concrete_mixer_open_set.zip
+            dist_open_set/ground_truth_test.csv
+            dist_open_set/source_manifest_private.csv
+            dist_open_set/build_summary.json
+            dist_open_set/contact_sheets/*.jpg
+          if-no-files-found: error
+          compression-level: 0
+          retention-days: 14
