@@ -47,18 +47,18 @@ jobs:
         run: python -m py_compile scripts/build_cucumber_mixer_open_set.py
 
       - name: Build and validate dataset
-        run: python scripts/build_cucumber_mixer_open_set.py
+        run: |
+          mkdir -p dist_open_set
+          set -o pipefail
+          python scripts/build_cucumber_mixer_open_set.py 2>&1 | tee dist_open_set/build.log
 
-      - name: Publish dataset and private evaluation files
+      - name: Publish dataset and diagnostics
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: cucumber-concrete-mixer-open-set
           path: |
-            dist_open_set/cucumber_concrete_mixer_open_set.zip
-            dist_open_set/ground_truth_test.csv
-            dist_open_set/source_manifest_private.csv
-            dist_open_set/build_summary.json
-            dist_open_set/contact_sheets/*.jpg
+            dist_open_set/**
           if-no-files-found: error
           compression-level: 0
           retention-days: 14
