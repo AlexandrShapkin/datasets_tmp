@@ -8,7 +8,7 @@ import traceback
 import zipfile
 from pathlib import Path
 
-import build_dataset_v7 as builder
+import build_dataset_v8 as builder
 
 
 def enforce_minimum(flag: str, minimum: int) -> None:
