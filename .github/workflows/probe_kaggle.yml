@@ -1,0 +1,35 @@
+name: Probe Kaggle Fruits-262
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/probe_kaggle.yml"
+      - "scripts/kaggle_probe.py"
+
+permissions:
+  contents: read
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install Kaggle clients
+        run: python -m pip install --upgrade kaggle kagglehub
+      - name: Probe dataset file structure
+        run: python scripts/kaggle_probe.py
+      - name: Upload probe report
+        uses: actions/upload-artifact@v4
+        with:
+          name: kaggle-fruits262-probe
+          path: |
+            dist/kaggle_probe.txt
+            dist/kaggle_single/**
+          if-no-files-found: error
+          retention-days: 2
