@@ -5,10 +5,9 @@ import json
 import traceback
 from pathlib import Path
 
-import build_cucumber_mixer_open_set_v6 as builder_v6
+import build_cucumber_mixer_open_set_v7 as builder_v7
 
-builder = builder_v6
-
+builder = builder_v7
 
 if __name__ == "__main__":
     try:
