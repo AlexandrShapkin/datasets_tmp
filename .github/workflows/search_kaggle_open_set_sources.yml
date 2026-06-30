@@ -1,0 +1,39 @@
+name: Search Kaggle open-set sources
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/search_kaggle_open_set_sources.yml"
+      - "scripts/search_kaggle_open_set_sources.py"
+  pull_request:
+    branches: [main]
+    paths:
+      - ".github/workflows/search_kaggle_open_set_sources.yml"
+      - "scripts/search_kaggle_open_set_sources.py"
+      - "scripts/KAGGLE_SEARCH_TRIGGER"
+
+permissions:
+  contents: read
+
+jobs:
+  search:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install Kaggle CLI
+        run: python -m pip install --upgrade kaggle
+      - name: Search datasets
+        run: python scripts/search_kaggle_open_set_sources.py
+      - name: Upload report
+        uses: actions/upload-artifact@v4
+        with:
+          name: kaggle-open-set-source-search
+          path: dist_kaggle_search/kaggle_search.txt
+          if-no-files-found: error
+          retention-days: 2
