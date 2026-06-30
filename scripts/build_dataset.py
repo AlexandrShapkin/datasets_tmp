@@ -8,7 +8,7 @@ import traceback
 import zipfile
 from pathlib import Path
 
-import build_dataset_v5 as builder
+import build_dataset_v6 as builder
 
 
 def enforce_minimum(flag: str, minimum: int) -> None:
@@ -63,8 +63,8 @@ def write_failure_artifact(error: BaseException) -> None:
         zip_file.write(dataset / "validation.json", "dataset/validation.json")
 
 
-enforce_minimum("--candidate-limit", 1200)
-enforce_minimum("--source-limit", 250)
+enforce_minimum("--candidate-limit", 2000)
+enforce_minimum("--source-limit", 400)
 enforce_minimum("--workers", 20)
 
 
